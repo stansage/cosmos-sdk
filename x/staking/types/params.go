@@ -29,6 +29,9 @@ const (
 	// DefaultHistorical entries is 0 since it must only be non-zero for
 	// IBC connected chains
 	DefaultHistoricalEntries uint32 = 0
+
+	// Check minimum validator stake on creation
+	DefaultValidatorMinStake = 1000
 )
 
 // nolint - Keys for parameter access
@@ -38,13 +41,14 @@ var (
 	KeyMaxEntries        = []byte("KeyMaxEntries")
 	KeyBondDenom         = []byte("BondDenom")
 	KeyHistoricalEntries = []byte("HistoricalEntries")
+	KeyValidatorMinStake = []byte("ValidatorMinStake")
 )
 
 var _ paramtypes.ParamSet = (*Params)(nil)
 
 // NewParams creates a new Params instance
 func NewParams(
-	unbondingTime time.Duration, maxValidators, maxEntries, historicalEntries uint32, bondDenom string,
+	unbondingTime time.Duration, maxValidators, maxEntries, historicalEntries uint32, bondDenom string, validatorMinStake uint32
 ) Params {
 
 	return Params{
@@ -53,6 +57,7 @@ func NewParams(
 		MaxEntries:        maxEntries,
 		HistoricalEntries: historicalEntries,
 		BondDenom:         bondDenom,
+		ValidatorMinStake: validatorMinStake,
 	}
 }
 
@@ -64,6 +69,7 @@ func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 		paramtypes.NewParamSetPair(KeyMaxEntries, &p.MaxEntries, validateMaxEntries),
 		paramtypes.NewParamSetPair(KeyHistoricalEntries, &p.HistoricalEntries, validateHistoricalEntries),
 		paramtypes.NewParamSetPair(KeyBondDenom, &p.BondDenom, validateBondDenom),
+		paramtypes.NewParamSetPair(KeyValidatorMinStake, &p.ValidatorMinStake, validatorMinStake),
 	}
 }
 
@@ -75,6 +81,7 @@ func DefaultParams() Params {
 		DefaultMaxEntries,
 		DefaultHistoricalEntries,
 		sdk.DefaultBondDenom,
+		DefaultValidatorMinStake
 	)
 }
 
@@ -114,6 +121,9 @@ func (p Params) Validate() error {
 		return err
 	}
 	if err := validateBondDenom(p.BondDenom); err != nil {
+		return err
+	}
+	if err := validateValidatorMinStake(p.ValidatorMinStake); err != nil {
 		return err
 	}
 
@@ -179,6 +189,19 @@ func validateBondDenom(i interface{}) error {
 	}
 	if err := sdk.ValidateDenom(v); err != nil {
 		return err
+	}
+
+	return nil
+}
+
+func validateValidatorMinStake(i interface{}) error {
+	v, ok := i.(uint32)
+	if !ok {
+		return fmt.Errorf("invalid parameter type: %T", i)
+	}
+
+	if v == 0 {
+		return fmt.Errorf("min validator stake must be positive: %d", v)
 	}
 
 	return nil

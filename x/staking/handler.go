@@ -64,7 +64,7 @@ func handleMsgCreateValidator(ctx sdk.Context, msg types.MsgCreateValidator, k k
 	if _, err := msg.Description.EnsureLength(); err != nil {
 		return nil, err
 	}
-
+	
 	if ctx.ConsensusParams() != nil {
 		tmPubKey := tmtypes.TM2PB.PubKey(pk)
 		if !tmstrings.StringInSlice(tmPubKey.Type, ctx.ConsensusParams().Validator.PubKeyTypes) {
@@ -73,6 +73,15 @@ func handleMsgCreateValidator(ctx sdk.Context, msg types.MsgCreateValidator, k k
 				"got: %s, expected: %s", tmPubKey.Type, ctx.ConsensusParams().Validator.PubKeyTypes,
 			)
 		}
+		if msg.Value.Amount < ctx.ConsensusParams().Staking.ValidatorMinStake {
+			return nil, sdkerrors.Wrapf(
+				ErrInvalidValidatorAmount,
+				"got: %s, should be grater or equal: %s",
+				msg.Value.Amount,
+				ctx.ConsensusParams().Staking.ValidatorMinStake
+			)
+		}
+
 	}
 
 	validator := NewValidator(msg.ValidatorAddress, pk, msg.Description)
