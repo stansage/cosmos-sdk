@@ -30,8 +30,8 @@ const (
 	// IBC connected chains
 	DefaultHistoricalEntries uint32 = 0
 
-	// Check minimum validator stake on creation
-	DefaultValidatorMinStake = 1000
+	// Default minimum validator stake for creation
+	DefaultValidatorMinStake uint32 = 1000
 )
 
 // nolint - Keys for parameter access
@@ -48,7 +48,7 @@ var _ paramtypes.ParamSet = (*Params)(nil)
 
 // NewParams creates a new Params instance
 func NewParams(
-	unbondingTime time.Duration, maxValidators, maxEntries, historicalEntries uint32, bondDenom string, validatorMinStake uint32
+	unbondingTime time.Duration, maxValidators, maxEntries, historicalEntries uint32, bondDenom string, validatorMinStake uint32,
 ) Params {
 
 	return Params{
@@ -69,7 +69,7 @@ func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 		paramtypes.NewParamSetPair(KeyMaxEntries, &p.MaxEntries, validateMaxEntries),
 		paramtypes.NewParamSetPair(KeyHistoricalEntries, &p.HistoricalEntries, validateHistoricalEntries),
 		paramtypes.NewParamSetPair(KeyBondDenom, &p.BondDenom, validateBondDenom),
-		paramtypes.NewParamSetPair(KeyValidatorMinStake, &p.ValidatorMinStake, validatorMinStake),
+		paramtypes.NewParamSetPair(KeyValidatorMinStake, &p.ValidatorMinStake, validateValidatorMinStake),
 	}
 }
 
@@ -81,7 +81,7 @@ func DefaultParams() Params {
 		DefaultMaxEntries,
 		DefaultHistoricalEntries,
 		sdk.DefaultBondDenom,
-		DefaultValidatorMinStake
+		DefaultValidatorMinStake,
 	)
 }
 

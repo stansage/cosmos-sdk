@@ -1142,6 +1142,7 @@ func (m *Redelegation) GetEntries() []RedelegationEntry {
 
 // Params defines the parameters for the staking module.
 type Params struct {
+	ValidatorMinStake uint32        `protobuf:"varint,2,opt,name=validator_min_stake,json=validatorMinStake,proto3" json:"validator_min_stake,omitempty" yaml:"validator_min_stake"`
 	UnbondingTime     time.Duration `protobuf:"bytes,1,opt,name=unbonding_time,json=unbondingTime,proto3,stdduration" json:"unbonding_time" yaml:"unbonding_time"`
 	MaxValidators     uint32        `protobuf:"varint,2,opt,name=max_validators,json=maxValidators,proto3" json:"max_validators,omitempty" yaml:"max_validators"`
 	MaxEntries        uint32        `protobuf:"varint,3,opt,name=max_entries,json=maxEntries,proto3" json:"max_entries,omitempty" yaml:"max_entries"`
@@ -1180,6 +1181,13 @@ func (m *Params) XXX_DiscardUnknown() {
 }
 
 var xxx_messageInfo_Params proto.InternalMessageInfo
+
+func (m *Params) GetValidatorMinStake() uint32 {
+	if m != nil {
+		return m.ValidatorMinStake
+	}
+	return 0
+}
 
 func (m *Params) GetUnbondingTime() time.Duration {
 	if m != nil {

@@ -50,6 +50,12 @@ func (k Keeper) BondDenom(ctx sdk.Context) (res string) {
 	return
 }
 
+// ValidatorMinStake - Minimum validator stake for creation
+func (k Keeper) ValidatorMinStake(ctx sdk.Context) (res uint32) {
+	k.paramstore.Get(ctx, types.KeyValidatorMinStake, &res)
+	return
+}
+
 // Get all parameteras as types.Params
 func (k Keeper) GetParams(ctx sdk.Context) types.Params {
 	return types.NewParams(
@@ -58,6 +64,7 @@ func (k Keeper) GetParams(ctx sdk.Context) types.Params {
 		k.MaxEntries(ctx),
 		k.HistoricalEntries(ctx),
 		k.BondDenom(ctx),
+		k.ValidatorMinStake(ctx),
 	)
 }
 

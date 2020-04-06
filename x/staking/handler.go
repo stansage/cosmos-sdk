@@ -61,6 +61,19 @@ func handleMsgCreateValidator(ctx sdk.Context, msg types.MsgCreateValidator, k k
 		return nil, ErrBadDenom
 	}
 
+	if msg.Value.Amount.GT(sdk.ZeroInt()) {
+		var value = sdk.NewIntFromUint64(uint64(k.ValidatorMinStake(ctx)))
+		var validatorMinStake = sdk.NewCoin(k.BondDenom(ctx), value)
+		if msg.Value.Amount.LT(validatorMinStake.Amount) {
+			return nil, sdkerrors.Wrapf(
+				ErrInvalidValidatorAmount,
+				"got: %s, should be grater or equal: %s",
+				msg.Value.Amount,
+				validatorMinStake.Amount,
+			)
+		}
+	}
+
 	if _, err := msg.Description.EnsureLength(); err != nil {
 		return nil, err
 	}
@@ -73,15 +86,6 @@ func handleMsgCreateValidator(ctx sdk.Context, msg types.MsgCreateValidator, k k
 				"got: %s, expected: %s", tmPubKey.Type, ctx.ConsensusParams().Validator.PubKeyTypes,
 			)
 		}
-		if msg.Value.Amount < ctx.ConsensusParams().Staking.ValidatorMinStake {
-			return nil, sdkerrors.Wrapf(
-				ErrInvalidValidatorAmount,
-				"got: %s, should be grater or equal: %s",
-				msg.Value.Amount,
-				ctx.ConsensusParams().Staking.ValidatorMinStake
-			)
-		}
-
 	}
 
 	validator := NewValidator(msg.ValidatorAddress, pk, msg.Description)
