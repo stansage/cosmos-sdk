@@ -85,6 +85,7 @@ var (
 	ErrValidatorPubKeyExists           = types.ErrValidatorPubKeyExists
 	ErrValidatorPubKeyTypeNotSupported = types.ErrValidatorPubKeyTypeNotSupported
 	ErrValidatorJailed                 = types.ErrValidatorJailed
+	ErrInvalidValidatorStake           = types.ErrInvalidValidatorStake
 	ErrBadRemoveValidator              = types.ErrBadRemoveValidator
 	ErrCommissionNegative              = types.ErrCommissionNegative
 	ErrCommissionHuge                  = types.ErrCommissionHuge
