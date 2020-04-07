@@ -61,12 +61,12 @@ func handleMsgCreateValidator(ctx sdk.Context, msg types.MsgCreateValidator, k k
 		return nil, ErrBadDenom
 	}
 
-	if msg.Value.Amount.GT(sdk.ZeroInt()) {
+	if msg.Value.Amount.GTE(sdk.ZeroInt()) {
 		var value = sdk.NewIntFromUint64(uint64(k.ValidatorMinStake(ctx)))
 		var validatorMinStake = sdk.NewCoin(k.BondDenom(ctx), value)
 		if msg.Value.Amount.LT(validatorMinStake.Amount) {
 			return nil, sdkerrors.Wrapf(
-				ErrInvalidValidatorAmount,
+				ErrInvalidValidatorStake,
 				"got: %s, should be grater or equal: %s",
 				msg.Value.Amount,
 				validatorMinStake.Amount,
